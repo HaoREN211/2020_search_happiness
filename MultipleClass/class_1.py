@@ -3,10 +3,9 @@
 # @FileName: class_1.py
 # @Software: PyCharm
 
-from Main import *
 from Features.function import *
-from sklearn.preprocessing import OneHotEncoder
 from Features.XGBoost_feature_selection import *
+import os
 
 DROP_COLUMNS = ["happiness", "label", "survey_time", "edu_other"]
 
@@ -18,26 +17,28 @@ if __name__ == '__main__':
     calculate_iv(self.data, "survey_type", "label")
 
     # 根据XGBoost选择合适的特征
-    columns = select_features(self.data, drop_columns=DROP_COLUMNS, label_name="label")
+    file_path = "Features/label_1_features.xlsx"
+    if not os.path.exists(file_path):
+        columns = select_features(self.data, ["label", "happiness"], "label")
+        result = pd.DataFrame({"columns": columns})
+        result.to_excel(file_path, index=None)
+    else:
+        columns = pd.read_excel(file_path)
 
-    result = pd.DataFrame(columns=["column", "iv"])
-    for index, column in enumerate(self.data.columns):
-        if column in ("happiness", "label"):
-            continue
-        if len(list(set(self.data[column].values))) < 10:
-            result = result.append(
-                pd.DataFrame({
-                    "column": [column],
-                    "iv": [calculate_iv(self.data, column, "label")]
-                })
-            )
-            print(column+"的iv值为："+str(calculate_iv(self.data, column, "label")))
-    np.median(self.data["family_income"].median)
+    # 拆分训练集和验证集
+    X, y = self.data[columns], self.data["label"].values
+    train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0)
 
-    # 将地区的编码转化成为OneHot编码
-    one_hot_encoder = OneHotEncoder(sparse=False)
-    one_hot_df = pd.DataFrame(one_hot_encoder.fit_transform(
-        np.reshape(self.data["hukou"].values, (-1, 1))))
-    one_hot_encoder.fit(np.reshape(self.data["hukou"].values, (-1, 1)))
-    one_hot_encoder.categories_
-    one_hot_encoder.transform(np.reshape(self.data["hukou"].values, (-1, 1)))[0]
+    # 训练模型
+    model = XGBClassifier()
+    model.fit(train_X, train_y)
+
+    # 验证模型
+    val_y_predict = model.predict(val_X)
+    val_y_prob = model.predict_proba(val_X)
+    val_0_prob, val_1_prob = [round(x[0], 4) for x in val_y_prob], [round(x[1], 4) for x in val_y_prob]
+    result = pd.DataFrame({"predict": val_y_predict,
+                           "val_0_prob": val_0_prob,
+                           "val_1_prob": val_1_prob})
+    print(accuracy_score(val_y, val_y_predict))
+

@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from sklearn.feature_selection import SelectFromModel
 from sklearn.metrics import accuracy_score
+from copy import copy
 
 # 根据XGBoost特征的重要性筛选特征
 def select_features(train_data, drop_columns, label_name, model=XGBClassifier(), cv=5):

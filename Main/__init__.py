@@ -12,7 +12,7 @@ class Config(object):
     TRAIN_DATA_FILE = r"Data/happiness_train_complete.csv"
     TEST_DATA_FILE = r"Data/happiness_test_complete.csv"
 
-    def __init__(self, is_train=True):
+    def __init__(self, is_train=True, label=1):
         tmp_file = self.TRAIN_DATA_FILE if is_train else self.TEST_DATA_FILE
         tmp_type = "训练" if is_train else "测试"
         self.data = pd.read_csv(tmp_file, header=0, encoding='gbk')
@@ -21,13 +21,12 @@ class Config(object):
               + str(np.shape(self.data)[1]) + "特征")
         if is_train:
             self.drop_invalid_data_label()
+        self.set_label(label=label)
         self.generate_feature()
         self.replace_default_value()
         self.generate_replaced_feature()
         self.one_hot_feature()
         self.drop_non_useful_columns()
-
-
 
     # 多分类标签时用
     def set_label(self, label=1):
@@ -37,6 +36,20 @@ class Config(object):
     # 和伴侣文化程度的差异
     def edu_diff(self):
         self.data["edu_diff"] = self.data.apply(lambda x: x["edu"]-x["s_edu"] if x["s_edu"] > 0 else 0, axis=1)
+        self.data["political_equal"] = self.data.apply(
+            lambda x: 1 if x["s_political"] == x["political"] else 0, axis=1)
+        self.data["s_political_equal"] = self.data.apply(
+            lambda x: 1 if x["s_political"] == x["political"] else 0, axis=1)
+        self.data["s_hukou_equal"] = self.data.apply(
+            lambda x: 1 if x["hukou"] == x["s_hukou"] else 0, axis=1)
+        self.data["income_diff"] = self.data.apply(
+            lambda x: x["income"]-x["s_income"] if x["s_income"] > 0 else 0, axis=1)
+        self.data["s_work_exper_equal"] = self.data.apply(
+            lambda x: 1 if x["work_exper"] == x["s_work_exper"] else 0, axis=1)
+        self.data["s_work_status_equal"] = self.data.apply(
+            lambda x: 1 if x["work_status"] == x["s_work_status"] else 0, axis=1)
+        self.data["s_work_type"] = self.data.apply(
+            lambda x: 1 if x["work_type"] == x["s_work_type"] else 0, axis=1)
 
     # 删除标签不正确的样本
     def drop_invalid_data_label(self):
@@ -74,6 +87,9 @@ class Config(object):
         self.data["income_per_person"] = self.data.apply(
             lambda x: x["family_income"] / x["family_m"] if x["family_m"] > 0 else x["family_income"], axis=1)
 
+    # 期望工资与当前工资的差
+    def calculate_inc_exp_diff(self):
+        self.data["inc_exp_diff"] = self.data.apply(lambda x: x["inc_exp"]-x["income"], axis=1)
 
     # 替换缺失值之后计算新的特征
     def generate_replaced_feature(self):
@@ -81,6 +97,7 @@ class Config(object):
         self.class_diff()
         self.income_about()
         self.calculate_marital_age()
+        self.calculate_inc_exp_diff()
 
     def calculate_marital_age(self):
         self.data["marital_age"] = self.data.apply(lambda x: x["marital_1st"]-x["birth"] if x["marital_1st"]>1000 else 0, axis=1)
@@ -105,7 +122,11 @@ class Config(object):
                    "leisure_9", "leisure_10", "leisure_11", "leisure_12", "socialize", "relax", "learn", "social_neighbor",
                    "social_friend", "socia_outing", "equity", "class", "class_10_before", "class_10_after", "class_14",
                    "insur_1", "insur_2", "insur_3", "insur_4", "family_income", "family_m", "family_status", "house",
-                   "car", "son", "daughter", "minor_child", "s_edu"]
+                   "car", "son", "daughter", "minor_child", "s_edu", "status_peer", "status_3_before", "view", "inc_ability",
+                   "inc_exp", "inc_exp", "trust_1", "trust_2", "trust_3", "trust_4", "trust_5", "trust_6", "trust_7", "trust_8",
+                   "trust_9", "trust_10", "trust_11", "trust_12", "trust_13", "neighbor_familiarity", "public_service_1",
+                   "public_service_2", "public_service_3", "public_service_4", "public_service_5", "public_service_6",
+                   "public_service_7", "public_service_8", "public_service_9", "s_income"]
         for column in columns:
             print("---> 当前替换"+column+", 替换成众数："+str(self.data[column].median()))
             self.data[column] = self.data.apply(lambda x: self.data[column].median() if x[column]<0 else x[column], axis=1)
@@ -117,12 +138,13 @@ class Config(object):
             self.data[column] = self.data[column].fillna(0)
             self.data[column] = self.data.apply(lambda x: x[column] if x[column]>0 else 0, axis=1)
 
-
     # 丢弃不需要的特征
     def drop_non_useful_columns(self):
         print("丢弃不需要的特征")
         columns = ["edu_other", "edu_yr", "birth", "join_party", "property_other", "invest_other", "invest_6",
-                   "marital_1st", "s_birth", "marital_now"]
+                   "marital_1st", "s_birth", "marital_now", "s_edu", "s_political", "s_hukou",
+                   "s_work_exper", "s_work_status", "s_work_type", "f_birth", "f_edu", "f_political",
+                   "f_work_14", "m_birth", "m_edu", "m_political", "m_work_14", "survey_time"]
         for column in columns:
             if column in self.data.columns:
                 self.data = self.data.drop(columns=[column])

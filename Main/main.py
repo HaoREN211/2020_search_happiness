@@ -4,10 +4,10 @@
 # @Software: PyCharm
 
 from Main import *
+from Features.XGBoost_feature_selection import *
 
 if __name__ == '__main__':
     self = Config()
-    self.data
 
     # 查看数据缺失情况
     self.data.info(verbose=True, null_counts=True)
@@ -21,9 +21,12 @@ if __name__ == '__main__':
     # 查看label分布
     self.data["happiness"].value_counts()
 
-    # 查看所有特征的数值分布
-    for index, column in enumerate(self.data.columns):
-        print("---" + str(index) + " ---> "+str(column))
-        print(self.data[column].value_counts())
+    columns = select_features(self.data, ["label", "happiness"], "label")
+    result = pd.DataFrame({"columns": columns})
+    result.to_excel("Features/label_1_features.xlsx", index=None)
 
-    int(np.median(self.data["happiness"].values))
+
+
+
+
+
