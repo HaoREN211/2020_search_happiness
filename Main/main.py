@@ -21,4 +21,9 @@ if __name__ == '__main__':
     # 查看label分布
     self.data["happiness"].value_counts()
 
+    # 查看所有特征的数值分布
+    for index, column in enumerate(self.data.columns):
+        print("---" + str(index) + " ---> "+str(column))
+        print(self.data[column].value_counts())
+
     int(np.median(self.data["happiness"].values))
