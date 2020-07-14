@@ -21,6 +21,8 @@ class Config(object):
               + str(np.shape(self.data)[1]) + "特征")
         if is_train:
             self.drop_invalid_data_label()
+        else:
+            self.data["happiness"] = [1]*len(self.data)
         self.set_label(label=label)
         self.generate_feature()
         self.replace_default_value()

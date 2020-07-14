@@ -20,7 +20,7 @@ if __name__ == '__main__':
             result = pd.DataFrame({"columns": columns})
             result.to_excel(file_path, index=None)
         else:
-            columns = pd.read_excel(file_path)
+            columns = pd.read_excel(file_path)["columns"].values
 
         # 拆分训练集和验证集
         X, y = self.data[columns], self.data["label"].values

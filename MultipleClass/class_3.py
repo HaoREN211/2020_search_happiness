@@ -1,7 +1,7 @@
-# @Time    : 2020/7/12 17:53
-# @Author  : REN Hao
-# @FileName: class_1.py
-# @Software: PyCharm
+# -*- coding: UTF-8 -*- 
+# 作者：hao.ren3
+# 时间：2020/7/14 19:56
+# IDE：PyCharm
 
 from Features.function import *
 from Features.XGBoost_feature_selection import *
@@ -11,13 +11,13 @@ DROP_COLUMNS = ["happiness", "label", "survey_time", "edu_other"]
 
 if __name__ == '__main__':
     self = Config()
-    self.set_label(1)
+    self.set_label(3)
 
     # 判断调查问卷的类型与1类标签的相关性
-    calculate_iv(self.data, "survey_type", "label")
+    calculate_iv(self.data, "equity", "label")
 
     # 根据XGBoost选择合适的特征
-    file_path = "Features/label_1_features.xlsx"
+    file_path = "Features/label_3_features.xlsx"
     if not os.path.exists(file_path):
         columns = select_features(self.data, ["label", "happiness"], "label")
         result = pd.DataFrame({"columns": columns})
