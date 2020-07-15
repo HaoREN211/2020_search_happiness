@@ -7,6 +7,8 @@ from Features.function import *
 from Features.XGBoost_feature_selection import *
 from sklearn.linear_model import LogisticRegression
 
+# 导出当前依赖包 pip freeze > requirements.txt
+
 if __name__ == '__main__':
     data_train = Config(is_train=True)
     data_test = Config(is_train=False)

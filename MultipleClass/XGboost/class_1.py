@@ -5,6 +5,7 @@
 
 from Features.function import *
 from Features.XGBoost_feature_selection import *
+import lightgbm
 import os
 
 DROP_COLUMNS = ["happiness", "label", "survey_time", "edu_other"]
