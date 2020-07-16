@@ -5,6 +5,7 @@
 
 from Features.function import *
 from Features.XGBoost_feature_selection import *
+from sklearn.metrics import recall_score, f1_score
 import os
 
 if __name__ == '__main__':
@@ -38,3 +39,5 @@ if __name__ == '__main__':
                                "val_0_prob": val_0_prob,
                                "val_1_prob": val_1_prob})
         print(accuracy_score(val_y, val_y_predict))
+        print(recall_score(val_y, val_y_predict))
+        print(f1_score(val_y, val_y_predict))

@@ -7,7 +7,7 @@ from Main import pd
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from sklearn.feature_selection import SelectFromModel
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 from copy import copy
 
 # 根据XGBoost特征的重要性筛选特征
@@ -36,7 +36,10 @@ def select_features(train_data, drop_columns, label_name, model=XGBClassifier(),
             select_val_X = selection.transform(val_X)
             val_y_predict = selection_model.predict(select_val_X)
 
-            accuracy += accuracy_score(val_y, val_y_predict)
+            # 使用F1分数，而不是用准确率
+            # accuracy += accuracy_score(val_y, val_y_predict)
+            print(accuracy_score(val_y, val_y_predict))
+            accuracy += f1_score(val_y, val_y_predict)
 
         result = result.append(
             pd.DataFrame({

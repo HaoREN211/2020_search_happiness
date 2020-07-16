@@ -18,13 +18,13 @@ if __name__ == '__main__':
     calculate_iv(self.data, "survey_type", "label")
 
     # 根据XGBoost选择合适的特征
-    file_path = "Features/label_1_features.xlsx"
+    file_path = "Features/XGBoost_features.xlsx"
     if not os.path.exists(file_path):
         columns = select_features(self.data, ["label", "happiness"], "label")
         result = pd.DataFrame({"columns": columns})
         result.to_excel(file_path, index=None)
     else:
-        columns = pd.read_excel(file_path)["columns"].values
+        columns = pd.read_excel(file_path, sheet_name="label_1")["columns"].values
 
     # 拆分训练集和验证集
     X, y = self.data[columns], self.data["label"].values

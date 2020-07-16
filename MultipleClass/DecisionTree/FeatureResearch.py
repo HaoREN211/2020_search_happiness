@@ -12,9 +12,9 @@ import pydotplus
 
 if __name__ == '__main__':
     self = Config()
-    dtc = DecisionTreeClassifier()
+    dtc = DecisionTreeClassifier(max_depth=2)
 
-    X, y = self.data.drop(columns=["label", "id", "happiness"]).copy(), self.data["label"].values
+    X, y = self.data.drop(columns=["label", "id", "happiness", "family_status"]).copy(), self.data["label"].values
     dtc.fit(X, y)
 
     # 使用sklearn自带的包打印决策树的结构
