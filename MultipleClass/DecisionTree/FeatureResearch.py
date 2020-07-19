@@ -14,7 +14,9 @@ if __name__ == '__main__':
     self = Config()
     dtc = DecisionTreeClassifier(max_depth=2)
 
-    X, y = self.data.drop(columns=["label", "id", "happiness", "family_status"]).copy(), self.data["label"].values
+    X, y = self.data.drop(columns=["label", "id", "happiness", "family_status",
+                                   "equity", "depression", "public_service_7",
+                                   "class_10_after", "health"]).copy(), self.data["label"].values
     dtc.fit(X, y)
 
     # 使用sklearn自带的包打印决策树的结构
@@ -28,6 +30,6 @@ if __name__ == '__main__':
         f.write(dot_data)
 
     dot_data = export_graphviz(dtc, feature_names=X.columns,
-                                    filled=True, rounded=True, special_characters=True)
+                               filled=True, rounded=True, special_characters=True)
     graph = pydotplus.graph_from_dot_data(dot_data)
     graph.write_pdf("treetwo.pdf")
