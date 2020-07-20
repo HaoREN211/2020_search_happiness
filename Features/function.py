@@ -32,13 +32,9 @@ def find_2_column_with_max_id(data, label="label", value_cnt=20):
             # 寻找两个特征合适的区间
             print("正在计算复合指标"+str(column_1)+"和"+str(column_2))
             for index_1_min, column_1_min in enumerate(list_value_1):
-                for index_1_max, column_1_max in enumerate(list_value_1):
-                    if index_1_max < index_1_min:
-                        continue
+                for column_1_max in list_value_1[index_1_min+1:]:
                     for index_2_min, column_2_min in enumerate(list_value_2):
-                        for index_2_max, column_2_max in enumerate(list_value_2):
-                            if index_2_max < index_2_min:
-                                continue
+                        for column_2_max in list_value_2[index_2_min+1:]:
                             data["complex_feature"] = data.apply(
                                 lambda x: 1 if ((column_1_min <= x[column_1] <= column_1_max)
                                                 and (column_2_min <= x[column_2] <= column_2_max))
@@ -52,9 +48,7 @@ def find_2_column_with_max_id(data, label="label", value_cnt=20):
                                 "column_2_max": [column_2_max],
                                 "iv": [calculate_iv(data, "complex_feature", label=label)]
                             }))
-                            result.to_csv("complex_feature.csv", index=False)
     return result
-
 
 
 # 计算离散变量column的iv值
@@ -85,9 +79,9 @@ def calculate_woe_detail(data, column, label):
         if current_good == 0 and current_bad == 0:
             result = 0
         elif current_bad == 0:
-            result = -100
+            result = -1
         elif current_good == 0:
-            result = 100
+            result = 1
         else:
             result = (current_bad / nb_bad) / (current_good / nb_good)
             result = math.log(result, math.e)
