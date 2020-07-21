@@ -6,6 +6,7 @@ from Main import *
 import math
 
 
+# 计算由两个特征组成的复核指标所构成的IV值
 def find_2_column_with_max_id(data, label="label", value_cnt=20):
     # 统计数据各特征有多少属性值
     column_value_cnt = [len(set(data[x].values)) for x in data.columns]
@@ -30,11 +31,11 @@ def find_2_column_with_max_id(data, label="label", value_cnt=20):
                 continue
             list_value_2 = sorted(list(set(data[column_2].values)))
             # 寻找两个特征合适的区间
-            print("正在计算复合指标"+str(column_1)+"和"+str(column_2))
+            print("正在计算复合指标" + str(column_1) + "和" + str(column_2))
             for index_1_min, column_1_min in enumerate(list_value_1):
-                for column_1_max in list_value_1[index_1_min+1:]:
+                for column_1_max in list_value_1[index_1_min + 1:]:
                     for index_2_min, column_2_min in enumerate(list_value_2):
-                        for column_2_max in list_value_2[index_2_min+1:]:
+                        for column_2_max in list_value_2[index_2_min + 1:]:
                             data["complex_feature"] = data.apply(
                                 lambda x: 1 if ((column_1_min <= x[column_1] <= column_1_max)
                                                 and (column_2_min <= x[column_2] <= column_2_max))
