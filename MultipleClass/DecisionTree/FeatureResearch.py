@@ -14,9 +14,10 @@ if __name__ == '__main__':
     self = Config()
     dtc = DecisionTreeClassifier(max_depth=2)
 
-    X, y = self.data.drop(columns=["label", "id", "happiness", "family_status",
-                                   "equity", "depression", "public_service_7",
-                                   "class_10_after", "health"]).copy(), self.data["label"].values
+    X, y = self.data.drop(columns=["label", "id", "happiness",
+                                   "family_status","equity", "depression", "public_service_7","class_10_after", "health",
+                                   "class", "inc_ability", "trust_5", "public_service_8", "status_peer", "view"
+                                   ]).copy(), self.data["label"].values
     dtc.fit(X, y)
 
     # 使用sklearn自带的包打印决策树的结构
